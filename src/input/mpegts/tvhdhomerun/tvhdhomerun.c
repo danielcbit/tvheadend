@@ -118,6 +118,7 @@ static htsmsg_t *
 tvhdhomerun_device_class_override_enum( void * p, const char *lang )
 {
   htsmsg_t *m = htsmsg_create_list();
+  htsmsg_add_str(m, NULL, "ISDB-T");
   htsmsg_add_str(m, NULL, "DVB-T");
   htsmsg_add_str(m, NULL, "DVB-C");
   htsmsg_add_str(m, NULL, "ATSC-T");
@@ -336,6 +337,9 @@ static void tvhdhomerun_device_create(struct hdhomerun_discover_device_t *dInfo)
       type = DVB_TYPE_CABLECARD;
     if (strstr(hd->hd_info.deviceModel, "_dvbt"))
       type = DVB_TYPE_T;
+   if (strstr(hd->hd_info.deviceModel, "_isdbt"))
+      type = DVB_TYPE_ISDB_T;
+
   }
 
   hd->hd_override_type = strdup(dvb_type2str(type));
@@ -476,6 +480,7 @@ void tvhdhomerun_init ( void )
     hdhomerun_debug_enable(hdhomerun_debug_obj);
   }
   idclass_register(&tvhdhomerun_device_class);
+  idclass_register(&tvhdhomerun_frontend_isdbt_class);
   idclass_register(&tvhdhomerun_frontend_dvbt_class);
   idclass_register(&tvhdhomerun_frontend_dvbc_class);
   idclass_register(&tvhdhomerun_frontend_atsc_t_class);

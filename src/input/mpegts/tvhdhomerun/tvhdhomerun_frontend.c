@@ -396,6 +396,9 @@ static int tvhdhomerun_frontend_tune(tvhdhomerun_frontend_t *hfe, mpegts_mux_ins
 
   /* resolve the modulation type */
   switch (dmc->dmc_fe_type) {
+    case DVB_TYPE_ISDB_T:
+      snprintf(channel_buf, sizeof(channel_buf), "auto:%u", dmc->dmc_fe_freq);
+      break;
     case DVB_TYPE_C:
       /* the symbol rate */
       symbol_rate = dmc->u.dmc_fe_qam.symbol_rate / 1000;
@@ -622,6 +625,16 @@ const idclass_t tvhdhomerun_frontend_class =
   }
 };
 
+const idclass_t tvhdhomerun_frontend_isdbt_class =
+{
+  .ic_super      = &tvhdhomerun_frontend_class,
+  .ic_class      = "tvhdhomerun_frontend_isdbt",
+  .ic_caption    = N_("HDHomeRun ISDB-T frontend"),
+  .ic_properties = (const property_t[]){
+    {}
+  }
+};
+
 const idclass_t tvhdhomerun_frontend_dvbt_class =
 {
   .ic_super      = &tvhdhomerun_frontend_class,
@@ -752,7 +765,9 @@ tvhdhomerun_frontend_create(tvhdhomerun_device_t *hd, struct hdhomerun_discover_
     uuid = htsmsg_get_str(conf, "uuid");
 
   /* Class */
-  if (type == DVB_TYPE_T)
+  if (type == DVB_TYPE_ISDB_T)
+    idc = &tvhdhomerun_frontend_isdbt_class;
+  else if (type == DVB_TYPE_T)
     idc = &tvhdhomerun_frontend_dvbt_class;
   else if (type == DVB_TYPE_C)
     idc = &tvhdhomerun_frontend_dvbc_class;
